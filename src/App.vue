@@ -1,33 +1,33 @@
 <template>
-  <div>
-    <HeaderVue/>
-    <HeaderBody/>
-    <FooterVue/>
-  </div>
+     <div>
+        <HeaderVue></HeaderVue>
+        <BodyVue id="banner"></BodyVue>
+        <FooterVue></FooterVue>
+     </div>
 </template>
 
 <script>
 import HeaderVue from './components/common/Header.vue';
 import FooterVue from './components/common/Footer.vue';
-import HeaderBody from './components/common/HeaderBody.vue'
+import BodyVue from './components/Body.vue';
 
 export default {
   name: 'App',
   components: {
     HeaderVue,
+    BodyVue,
     FooterVue,
-    HeaderBody
   }
 }
 </script>
 
 <style>
-#app {
+#banner {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 80px;
 }
 </style>
