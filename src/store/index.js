@@ -10,8 +10,8 @@ axios.defaults.headers.common['X-RapidAPI-Host'] = 'covid-193.p.rapidapi.com';
 export default new Vuex.Store({
     // state
     state: {
-        statistics: {},
-        history: {}
+        statistics: [],
+        history: {},
     },
 
     // mutations
@@ -34,9 +34,24 @@ export default new Vuex.Store({
             return new Promise((resolve, reject) => {
                 axios.get('/statistics')
                     .then(response => {
-                        context.commit('setStatistics', response.data)
+                        const statistics = response.data.response;
+                        const dataArray = [];
+
+                        statistics.forEach(function (item, index){
+                            dataArray.push({
+                                Index: index,
+                                Country: item.country, 
+                                Continent: item.continent, 
+                                Total_Cases: item.cases.total, 
+                                Total_Recovered: item.cases.recovered, 
+                                Total_Deaths: item.deaths.total, 
+                                Total_Tests: item.tests.total, 
+                                Population: item.population, 
+                                Day: item.day
+                            })
+                        });
+                        context.commit('setStatistics', dataArray)
                         resolve(resolve)
-                        console.log(response)
                     })
                     .catch(error => {
                         console.log(error);

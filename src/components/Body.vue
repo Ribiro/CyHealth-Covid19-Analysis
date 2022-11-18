@@ -2,60 +2,61 @@
     <div class="banner">
         <div class="btn-group btn-toggle gender">
             <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View"></div> 
-            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-primary" value="Table View"></div>
+            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
             <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View"></div>
-            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-primary" value="Graphical View"></div>
+            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
         </div>  
         <div id="message">
             <h3>{{message}}</h3>
         </div>
 
         <!-- The table logic starts here -->
-        <div v-if="!show" id="app">
+        <div v-show="!show" id="app">
             <b-container>
                 <b-form-input v-model="keyword" placeholder="Search Country/Continent..."></b-form-input>
                 <b-table 
                     label-sort-asc="" 
                     label-sort-desc="" 
                     label-sort-clear="" 
-                    :items="items" 
+                    :items="dataArray" 
                     :fields="fields" 
                     :per-page="perPage" 
                     :current-page="currentPage"
                     striped hover responsive
-                    >
-                    
+                    >                    
                 </b-table>
+
                 <div>
                     <div class="pag" style="display:inline-block">
-                        <b-pagination :per-page="perPage" v-model="currentPage" :total-rows="items.length"></b-pagination>
+                        <b-pagination :per-page="perPage" v-model="currentPage" :total-rows="this.$store.state.statistics.length"></b-pagination>
                     </div>
+
                     <div class="per_page" style="display:inline-block">
-                        &nbsp; &nbsp; Rows per page: 
+                        &nbsp; &nbsp; Rows Per Page: &nbsp;
                     </div>
-                    <div class="dropdown" style="display:inline-block">
-                        <b-dropdown size="sm" text="5" class="m-2">
-                        <b-dropdown-item-button>5</b-dropdown-item-button>
-                        <b-dropdown-item-button>10</b-dropdown-item-button>
-                        <b-dropdown-item-button>25</b-dropdown-item-button>
-                        <b-dropdown-item-button>50</b-dropdown-item-button>
-                        </b-dropdown>
+                    
+                    <div style="display:inline-block">
+                        <b-form-select class="select" v-model="perPage" :options="options"></b-form-select>
                     </div>
-                </div>
-                
-                
+                </div>                         
             </b-container>
         </div>
         <!-- The table logic ends here -->
 
         <!-- The graph logic starts here -->
-        <div v-if="show">
+        <b-container>
+            <div v-show="show" class="chart">
+            <canvas id="planet-chart"></canvas>
         </div>
+        </b-container>
         <!-- The graph logic starts here -->
     </div>
 </template>
 
 <script>
+    import Chart from 'chart.js'
+    import planetChartData from '../planet-data.js'
+
     export default {
         name: "Body",
         data () {
@@ -63,15 +64,9 @@
                 show: false,
                 message: 'Covid19 Statistics',
                 keyword: '',
-                perPage: 4,
+                perPage: 5,
                 currentPage: 1,
-                dataArray: [
-                    {Country: 'Kenya', Continent: 'Africa', Total_Cases: '456', Total_Recovered: '100', Total_Deaths: '50', Total_Tests: '5000', Population: '1000', Day: '2022-17-12'},
-                    {Country: 'England', Continent: 'Europe', Total_Cases: '456', Total_Recovered: '100', Total_Deaths: '50', Total_Tests: '5000', Population: '1000', Day: '2022-17-12'},
-                    {Country: 'Singapore', Continent: 'Asia', Total_Cases: '456', Total_Recovered: '100', Total_Deaths: '50', Total_Tests: '5000', Population: '1000', Day: '2022-17-12'},
-                    {Country: 'USA', Continent: 'North America', Total_Cases: '456', Total_Recovered: '100', Total_Deaths: '50', Total_Tests: '5000', Population: '1000', Day: '2022-17-12'},
-                    {Country: 'Argentina', Continent: 'South America', Total_Cases: '456', Total_Recovered: '100', Total_Deaths: '50', Total_Tests: '5000', Population: '1000', Day: '2022-17-12'},
-                ],
+                type: "line",
                 fields: [
                     {key: 'Country', label: 'Country', sortable: true},
                     {key: 'Continent', label: 'Continent', sortable: true},
@@ -82,13 +77,16 @@
                     {key: 'Population', label: 'Population', sortable: true},
                     {key: 'Day', label: 'Day', sortable: true}
 
-                ]
-                
+                ],
+                options: [5,10,25, 50, 100],
+                planetChartData: planetChartData             
             }
         },
         mounted(){
             this.$store.dispatch('getStatistics');
             this.$store.dispatch('getHistory', 'usa', '2022-11-17');
+            const ctx = document.getElementById('planet-chart');
+            new Chart(ctx, this.planetChartData);
         },
         methods: {
             switch_buttons(){
@@ -102,15 +100,18 @@
             }
         },
         computed: {
-        items () {
-            return this.keyword
-                ? this.dataArray.filter(item => item.Country.includes(this.keyword) || item.Continent.includes(this.keyword))
-                : this.dataArray
-            }
-        },
-        selectedRows() {
-            return this.items.filter(item => item.selected)
-        },
+            dataArray(){
+                return this.$store.state.statistics
+            },
+            items () {
+                return this.keyword
+                    ? this.dataArray.filter(item => item.Country.includes(this.keyword) || item.Continent.includes(this.keyword))
+                    : this.dataArray
+                }
+            },
+            selectedRows() {
+                return this.items.filter(item => item.selected)
+            },
     };
 </script>
 
@@ -120,7 +121,29 @@
    margin-top: 40px
 }
 
+#custom-button{
+    background-color: #329ae4;
+    color: white;
+}
+
+.chart{
+    text-align: center;
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 0;
+}
+
 .cursor-pointer{
   cursor: pointer;
+}
+
+.select{
+    width: 50px;
+    height: 30px;
+    font-family: Arial;
+    background-color: whitesmoke;
+    border: 1px solid #329ae4;
+    border-radius: 10%;
 }
 </style>
