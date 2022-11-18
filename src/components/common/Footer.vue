@@ -1,6 +1,8 @@
 <template>
-    <footer class="site-footer">
-      <div class="container" style="margin-top: 20px;">
+    <b-footer class="site-footer">
+      <div style="background-color:#26272b">
+        <b-container>
+        <div style="margin-top: 20px;">
         <div style="text-align: center;">
           <h6>About Site</h6>
         </div>
@@ -10,20 +12,25 @@
             The statistics and history are as fetched from 
               <a target="_blank" href="https://rapidapi.com/api-sports/api/covid-193/">Rapid API</a>.
           </p>
-          <hr>
         </div>
+        <hr>
       </div>
       <div>
+        
         <div  style="text-align: center;">
           <div>
             <p class="copyright-text">Copyright &copy; 2022 All Rights Reserved by 
-         <a target="_blank" href="https://ribiro.netlify.app">Denis Ribiro</a>.
+              <a target="_blank" href="https://ribiro.netlify.app">Denis Ribiro</a>.
             </p>
           </div>
-
+          <div>
+            &nbsp; &nbsp;
+          </div>
         </div>
       </div>
-</footer>
+      </b-container>
+      </div>
+</b-footer>
 </template>
 
 <script>
@@ -36,14 +43,11 @@
 .site-footer
 {
   background-color:#26272b;
-  font-size:15px;
-  line-height:24px;
   color:#737373;
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
+  width: 100%;
+  height: 2.5rem;
 }
 .site-footer hr
 {
