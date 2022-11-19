@@ -1,17 +1,63 @@
 <template>
     <div class="banner">
         <div class="btn-group btn-toggle gender">
-            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View"></div> 
-            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
-            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View"></div>
-            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
+            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View"></div> 
+            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
+            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View"></div>
+            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
         </div>  
         <div id="message">
             <h3>{{message}}</h3>
         </div>
 
+        <!-- The graph logic starts here -->
+        <b-container>
+            <div v-show="!show">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm">
+                            <label style="font-size: .75em;">Select Date</label>
+                            <b-form-datepicker
+                            id="datepicker-full-width"
+                            v-model="selected_date"
+                            menu-class="w-100"
+                            calendar-width="100%"
+                            class="mb-2"
+                            ></b-form-datepicker>
+                        </div>
+                        <div class="col-sm">
+                            <div class="input-select">
+                            <label>Select Country</label>
+                            <select v-model="selected_country">
+                            <option v-for="(country, index) in this.$store.state.countries" :key="index">
+                                {{ country.country }}
+                            </option>
+                            </select>
+                        </div>
+                        </div>
+                        <div class="col-sm">
+                            <label style="font-size: .75em;">Apply Filters</label>
+                            <div>
+                                <b-button @click="filterChart()" variant="outline-primary">Click To Filter</b-button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-show="show_indicator" class="row">
+                        <div class="d-flex align-items-center">
+                            <strong style="color:green">Loading Data...</strong>
+                            <div style="color:green" class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-show="!show" class="col-md-12" id="chart-div">
+                <canvas v-if="display" id="covid-chart"></canvas>
+            </div>
+        </b-container>
+        <!-- The graph logic starts here -->
+
         <!-- The table logic starts here -->
-        <div v-show="!show" id="app">
+        <div v-show="show" id="app">
             <b-container>
                 <b-form-input v-model="keyword" placeholder="Search Country/Continent..."></b-form-input>
                 <b-table 
@@ -19,7 +65,7 @@
                     label-sort-desc="" 
                     label-sort-clear="" 
                     :items="dataArray" 
-                    :fields="fields" 
+                    :fields="table_fields" 
                     :per-page="perPage" 
                     :current-page="currentPage"
                     striped hover responsive
@@ -42,32 +88,27 @@
             </b-container>
         </div>
         <!-- The table logic ends here -->
-
-        <!-- The graph logic starts here -->
-        <b-container>
-            <div v-show="show" class="chart">
-            <canvas id="planet-chart"></canvas>
-        </div>
-        </b-container>
-        <!-- The graph logic starts here -->
     </div>
 </template>
 
 <script>
     import Chart from 'chart.js'
-    import planetChartData from '../planet-data.js'
 
     export default {
         name: "Body",
         data () {
             return {
+                display: false,
                 show: false,
+                show_indicator: false,
                 message: 'Covid19 Statistics',
                 keyword: '',
-                perPage: 5,
+                perPage: 10,
                 currentPage: 1,
+                selected_country: 'USA',
+                selected_date: '2022-11-18',
                 type: "line",
-                fields: [
+                table_fields: [
                     {key: 'Country', label: 'Country', sortable: true},
                     {key: 'Continent', label: 'Continent', sortable: true},
                     {key: 'Total_Cases', label: 'Total_Cases', sortable: true},
@@ -79,14 +120,77 @@
 
                 ],
                 options: [5,10,25, 50, 100],
-                planetChartData: planetChartData             
             }
         },
+
+        computed: {
+            dataArray(){
+                return this.$store.state.statistics
+            },
+            items () {
+                return this.keyword
+                    ? this.dataArray.filter(item => item.Country.includes(this.keyword) || item.Continent.includes(this.keyword))
+                    : this.dataArray
+            },
+            covidChartData () {
+                return {
+                    type: "line",
+                    data: {
+                    labels: this.$store.getters.labels,
+                    datasets: [
+                        {
+                            label: "Cases",
+                            type: "bar",
+                            data: this.$store.getters.cases_data,
+                            backgroundColor: "#fffee9",
+                            borderColor: "orange",
+                            borderWidth: 3
+                        },
+                        {
+                            label: "Deaths",
+                            type: "line",
+                            data: this.$store.getters.deaths_data,
+                            backgroundColor: "#ffdcd1",
+                            borderColor: "red",
+                            borderWidth: 3
+                        },
+                        {
+                            label: "Tests",
+                            type: "line",
+                            data: this.$store.getters.tests_data,
+                            backgroundColor: "#c7f6b6",
+                            borderColor: "green",
+                            borderWidth: 3
+                        }
+                    ]
+                    },
+                    options: {
+                    responsive: true,
+                    lineTension: 1,
+                    scales: {
+                        yAxes: [
+                        {
+                            ticks: {
+                            beginAtZero: true,
+                            padding: 25
+                            }
+                        }
+                        ]
+                    }
+                    }
+                }          
+                }    
+                            
+        },
+
         mounted(){
+            this.$store.dispatch('getCountries');
             this.$store.dispatch('getStatistics');
-            this.$store.dispatch('getHistory', 'usa', '2022-11-17');
-            const ctx = document.getElementById('planet-chart');
-            new Chart(ctx, this.planetChartData);
+            this.filterChart();
+            this.loaded = true;
+            this.selected_country = 'USA';
+            this.selected_date = '2022-11-18';
+
         },
         methods: {
             switch_buttons(){
@@ -97,21 +201,30 @@
                 else{
                     this.message = 'Covid19 Statistics'
                 }
+            },
+
+            filterChart(){
+                this.display = true;
+                this.show_indicator = true;
+                return new Promise (() => {
+                    this.$store.dispatch('getHistory', 
+                    {country: this.selected_country, day: this.selected_date
+                }).then(()=> {
+                    this.show_indicator = false;
+
+                    if(window.myChart!=undefined) {
+                        window.myChart.destroy();
+                    }
+                    
+                    const ctx = document.getElementById('covid-chart')
+                    window.myChart = new Chart(ctx, this.covidChartData);
+                }).catch(()=>{
+                    console.log('Something is wrong')
+                })
+                })
             }
+
         },
-        computed: {
-            dataArray(){
-                return this.$store.state.statistics
-            },
-            items () {
-                return this.keyword
-                    ? this.dataArray.filter(item => item.Country.includes(this.keyword) || item.Continent.includes(this.keyword))
-                    : this.dataArray
-                }
-            },
-            selectedRows() {
-                return this.items.filter(item => item.selected)
-            },
     };
 </script>
 
@@ -144,6 +257,34 @@
     font-family: Arial;
     background-color: whitesmoke;
     border: 1px solid #329ae4;
-    border-radius: 10%;
+    border-radius: 8px;
+}
+
+.input-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border-radius: 10%;
+}
+.input-select label {
+  display: inline-block;
+  width: 100%;
+  font-size: 0.75em;
+}
+.input-select select {
+  padding-right: 1.875em;
+  cursor: pointer;
+  color: #000;
+  height: 40px;
+  padding-bottom: 8px;
+  border-radius: 8px;
+  appearance: none;
+  position: relative;
+  background-color: #fff;
+  color: #000;
+  font-size: 100%;
+  padding: 0.625em 0.5em;
+  border: 1px solid #d2d2d2;
+  width: 100%;
 }
 </style>

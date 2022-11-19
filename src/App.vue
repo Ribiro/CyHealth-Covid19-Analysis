@@ -2,13 +2,13 @@
      <div>
         <HeaderVue></HeaderVue>
         <BodyVue id="banner"></BodyVue>
-        <FooterVue></FooterVue>
+        <!-- <FooterVue id="footer"></FooterVue> -->
      </div>
 </template>
 
 <script>
 import HeaderVue from './components/common/Header.vue';
-import FooterVue from './components/common/Footer.vue';
+// import FooterVue from './components/common/Footer.vue';
 import BodyVue from './components/Body.vue';
 
 export default {
@@ -16,7 +16,7 @@ export default {
   components: {
     HeaderVue,
     BodyVue,
-    FooterVue,
+    // FooterVue,
   }
 }
 </script>
@@ -28,6 +28,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  margin-top: 80px;
+  margin-bottom: 100px;
+}
+#footer {
   margin-top: 80px;
 }
 </style>
