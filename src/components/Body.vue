@@ -1,9 +1,9 @@
 <template>
     <div class="banner">
         <div class="btn-group btn-toggle gender">
-            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View"></div> 
+            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View" style="border: 1px solid #329ae4;"></div> 
             <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
-            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View"></div>
+            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View" style="border: 1px solid #329ae4;"></div>
             <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
         </div>  
         <div id="message">
@@ -27,16 +27,16 @@
                         </div>
                         <div class="col-sm">
                             <div class="input-select">
-                            <label>Select Country</label>
-                            <select v-model="selected_country">
-                            <option v-for="(country, index) in this.$store.state.countries" :key="index">
-                                {{ country.country }}
-                            </option>
-                            </select>
-                        </div>
+                                <label>Select Country</label>
+                                <select v-model="selected_country">
+                                <option v-for="(country, index) in this.$store.state.countries" :key="index">
+                                    {{ country.country }}
+                                </option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-sm">
-                            <label style="font-size: .75em;">Apply Filters</label>
+                            <label style="font-size: .75em;">Apply Changes</label>
                             <div>
                                 <b-button @click="filterChart()" variant="outline-primary">Click To Filter</b-button>
                             </div>
@@ -54,13 +54,22 @@
                 <canvas v-if="display" id="covid-chart"></canvas>
             </div>
         </b-container>
-        <!-- The graph logic starts here -->
+        <!-- The graph ends starts here -->
 
         <!-- The table logic starts here -->
         <div v-show="show" id="app">
             <b-container>
-                <b-form-input v-model="keyword" placeholder="Search Country/Continent..."></b-form-input>
-                <b-table 
+                <div class="input-select">
+                    <label>Filter By Country &nbsp; &nbsp; <button v-if="table_selected_country" @click="clearCountry()" type="button" class="btn btn-warning btn-sm" style="margin-bottom: 5px;">Clear</button></label> 
+                    <select v-model="table_selected_country" style="height: 45px;">
+                    <option value="" disabled selected>-- Select Country --</option>
+                    <option v-for="(country, index) in this.$store.state.countries" :key="index">
+                        {{ country.country }}
+                    </option>
+                    </select>
+                </div>
+                <div>
+                    <b-table 
                     label-sort-asc="" 
                     label-sort-desc="" 
                     label-sort-clear="" 
@@ -72,6 +81,8 @@
                     >                    
                 </b-table>
 
+                </div>
+            
                 <div>
                     <div class="pag" style="display:inline-block">
                         <b-pagination :per-page="perPage" v-model="currentPage" :total-rows="this.$store.state.statistics.length"></b-pagination>
@@ -106,6 +117,7 @@
                 perPage: 10,
                 currentPage: 1,
                 selected_country: 'USA',
+                table_selected_country: '',
                 selected_date: '2022-11-18',
                 type: "line",
                 table_fields: [
@@ -203,6 +215,10 @@
                 }
             },
 
+            clearCountry(){
+                this.table_selected_country = ''
+            },
+
             filterChart(){
                 this.display = true;
                 this.show_indicator = true;
@@ -252,12 +268,14 @@
 }
 
 .select{
-    width: 50px;
-    height: 30px;
+    width: 55px;
+    height: 35px;
     font-family: Arial;
     background-color: whitesmoke;
     border: 1px solid #329ae4;
-    border-radius: 8px;
+    position: relative;
+    display: inline-block;
+    border-radius: 10%;
 }
 
 .input-select {
