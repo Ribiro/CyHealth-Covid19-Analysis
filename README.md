@@ -8,6 +8,6 @@ The statistics and history are as fetched from
 ```
 $ git clone https://github.com/Ribiro/CyHealth-Covid19-Analysis.git
 $ cd CyHealth-Covid19-Analysis
-npm install
-npm run serve
+$ npm install
+$ npm run serve
 ```
