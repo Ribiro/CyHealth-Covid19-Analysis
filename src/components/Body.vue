@@ -57,7 +57,7 @@
         <!-- The graph ends starts here -->
 
         <!-- The table logic starts here -->
-        <div v-show="show" id="app">
+        <div v-show="show" id="table-content">
             <b-container>
                 <div class="input-select">
                     <label>Filter By Country &nbsp; &nbsp; <button v-if="table_selected_country" @click="clearCountry()" type="button" class="btn btn-warning btn-sm" style="margin-bottom: 5px;">Clear</button></label> 
@@ -123,10 +123,10 @@
                 table_fields: [
                     {key: 'Country', label: 'Country', sortable: true},
                     {key: 'Continent', label: 'Continent', sortable: true},
-                    {key: 'Total_Cases', label: 'Total_Cases', sortable: true},
-                    {key: 'Total_Recovered', label: 'Total_Cases', sortable: true},
-                    {key: 'Total_Deaths', label: 'Total_Cases', sortable: true},
-                    {key: 'Total_Tests', label: 'Total_Cases', sortable: true},
+                    {key: 'Total_Cases', label: 'Total Cases', sortable: true},
+                    {key: 'Total_Recovered', label: 'Total Recovered', sortable: true},
+                    {key: 'Total_Deaths', label: 'Total Deaths', sortable: true},
+                    {key: 'Total_Tests', label: 'Total Tests', sortable: true},
                     {key: 'Population', label: 'Population', sortable: true},
                     {key: 'Day', label: 'Day', sortable: true}
 
@@ -137,13 +137,16 @@
 
         computed: {
             dataArray(){
-                return this.$store.state.statistics
+                if (this.table_selected_country){              
+                    this.$store.dispatch('filterStatistics', this.table_selected_country)
+                    return this.$store.state.selectedStatistic;
+                    // return this.$store.state.statistics;
+                }
+                else{
+                    return this.$store.state.statistics;
+                }                
             },
-            items () {
-                return this.keyword
-                    ? this.dataArray.filter(item => item.Country.includes(this.keyword) || item.Continent.includes(this.keyword))
-                    : this.dataArray
-            },
+
             covidChartData () {
                 return {
                     type: "line",
@@ -191,7 +194,7 @@
                     }
                     }
                 }          
-                }    
+            },   
                             
         },
 
@@ -253,6 +256,10 @@
 #custom-button{
     background-color: #329ae4;
     color: white;
+}
+
+#table-content{
+    overflow:auto;
 }
 
 .chart{

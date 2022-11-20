@@ -2,21 +2,18 @@
      <div>
         <HeaderVue></HeaderVue>
         <BodyVue id="banner"></BodyVue>
-        <!-- <FooterVue id="footer"></FooterVue> -->
      </div>
 </template>
 
 <script>
 import HeaderVue from './components/common/Header.vue';
-// import FooterVue from './components/common/Footer.vue';
 import BodyVue from './components/Body.vue';
 
 export default {
   name: 'App',
   components: {
     HeaderVue,
-    BodyVue,
-    // FooterVue,
+    BodyVue
   }
 }
 </script>
