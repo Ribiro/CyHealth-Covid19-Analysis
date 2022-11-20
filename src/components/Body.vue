@@ -2,9 +2,9 @@
     <div class="banner">
         <div class="btn-group btn-toggle gender">
             <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Graphical View" style="border: 1px solid #329ae4;"></div> 
-            <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
+            <div v-if="!show"><input type="button" name="view" class="btn" value="Graphical View" id="custom-button"></div>
             <div v-if="!show"><input @click="switch_buttons()" type="button" name="view" class="btn btn-default" value="Table View" style="border: 1px solid #329ae4;"></div>
-            <div v-if="show"><input @click="switch_buttons()" type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
+            <div v-if="show"><input type="button" name="view" class="btn" value="Table View" id="custom-button"></div>
         </div>  
         <div id="message">
             <h3>{{message}}</h3>
