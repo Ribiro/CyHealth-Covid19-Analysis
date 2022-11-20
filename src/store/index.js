@@ -12,7 +12,9 @@ export default new Vuex.Store({
     // state
     state: {
         statistics: [],
+        selectedStatistic: [],
         countries: [],
+        country: '',
         labels: [],
         cases_data: [],
         deaths_data: [],
@@ -36,7 +38,20 @@ export default new Vuex.Store({
         // set the fetched countries
         setCountries(state, payload){
             state.countries = payload
-        }
+        },
+
+        // filtering logic
+        addStatisticsSelection(state, payload) {
+            state.country = payload;
+            let filtered = []
+            for (let i=0; i<state.statistics.length; i++){
+                if (state.statistics[i].Country == state.country){
+                    filtered.push(state.statistics[i])
+                    state.selectedStatistic = filtered
+                }
+            }
+        },
+
     },
 
     // actions
@@ -144,7 +159,8 @@ export default new Vuex.Store({
             })
         },
 
-        setHistoryData(){
+        filterStatistics(context, table_selected_country){
+            context.commit('addStatisticsSelection', table_selected_country) 
         }
     },
 
@@ -160,6 +176,9 @@ export default new Vuex.Store({
         },
         tests_data: state => {
             return state.tests_data;
+        },
+        filteredStatistics: state=> {
+            return state.selectedStatistic
         }
     }
 })
