@@ -12,3 +12,4 @@ $ cd CyHealth-Covid19-Analysis
 $ npm install
 $ npm run serve
 ```
+Author <a target="_blank" href="https://github.com/Ribiro">Denis Ribiro</a>.
