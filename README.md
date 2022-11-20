@@ -3,6 +3,8 @@ Analysis Made Simple. <i>CyHealth Covid19 System </i> is a web app that visualiz
 
 ##### Tools & Libraries Used: Vue.js, Chart.js, HTML/CSS, Bootstrap
 
+#### View <a target="_blank" href="#">Live Demo</a>
+
 ## Project setup
 ```
 $ git clone https://github.com/Ribiro/CyHealth-Covid19-Analysis.git
